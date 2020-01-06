@@ -14,6 +14,8 @@ BACKGROUND = "/fam.bmp"            # specify color or background BMP file
 NUM_FLAKES = 75                    # total number of snowflakes
 SNOW_COLOR = 0xFFFFFF              # snow color
 SHAKE_THRESHOLD = 27               # shake sensitivity, lower=more sensitive
+COLORS = ((183, 28, 28), (136, 14, 79), (74, 20, 140), (49, 27, 146), (26, 35, 126), (13, 71, 161), (1, 87, 155), (0, 96, 100), (0, 77, 64), (27, 94, 32), (51, 105, 30), (130, 119, 23), (245, 127, 23), (255, 111, 0), (230, 81, 0), (191, 54, 12), (62, 39, 35), (33, 33, 33), (38, 50, 56), (250, 250, 250), (0, 0, 0))
+BRIGHTNESS = [0.03, 0.05, 0.1, 0.3, 0.6, 1, 0.0]
 #---| User Config |---------------
 
 # Accelerometer setup
@@ -132,6 +134,8 @@ def get_brightness_level(value):
     # Return values from pre-determined ranges to 
     #   avoid updating the brightness too often, which can cause the 
     #   screen to go black at times.
+    if cpb.switch == True:
+        return 1
     if value < 10:
         return 0.05
     if value < 1:
@@ -143,8 +147,26 @@ def get_brightness_level(value):
     return 1
 
 clear_the_snow()
+color_index = 0
+cpb.pixels.fill(COLORS[color_index])
+brightness_index = 0
+cpb.pixels.brightness = BRIGHTNESS[brightness_index]
 while True:
     display.brightness = get_brightness_level(cpb.light)
+    
+    if cpb.button_b:
+        if color_index < (len(COLORS) - 1):
+            color_index += 1
+        else:
+            color_index = 0
+        cpb.pixels.fill(COLORS[color_index])
+    if cpb.button_a:
+        if brightness_index < (len(BRIGHTNESS) - 1):
+            brightness_index += 1
+        else:
+            brightness_index = 0
+        cpb.pixels.brightness = BRIGHTNESS[brightness_index]
+        
     for i, flake in enumerate(flakes):
         x, y, z = cpb.acceleration
         # speed based on accelerometer
