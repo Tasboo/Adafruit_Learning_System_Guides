@@ -7,6 +7,7 @@ from adafruit_gizmo import tft_gizmo
 import adafruit_imageload
 import adafruit_lis3dh
 import time
+from adafruit_circuitplayground.bluefruit import cpb
 
 #---| User Config |---------------
 BACKGROUND = "/fam.bmp"            # specify color or background BMP file
@@ -16,8 +17,8 @@ SHAKE_THRESHOLD = 27               # shake sensitivity, lower=more sensitive
 #---| User Config |---------------
 
 # Accelerometer setup
-accelo_i2c = busio.I2C(board.ACCELEROMETER_SCL, board.ACCELEROMETER_SDA)
-accelo = adafruit_lis3dh.LIS3DH_I2C(accelo_i2c, address=0x19)
+#accelo_i2c = busio.I2C(board.ACCELEROMETER_SCL, board.ACCELEROMETER_SDA)
+#accelo = adafruit_lis3dh.LIS3DH_I2C(accelo_i2c, address=0x19)
 
 # XYZ Accelerometer Sensor Setup
 
@@ -74,6 +75,7 @@ splash = displayio.Group()
 splash.append(background)
 splash.append(flakes)
 splash.append(snow)
+display.brightness = 0.1
 display.show(splash)
 
 def clear_the_snow():
@@ -123,11 +125,28 @@ def add_snow(index, amount, steepness=2):
         if new_level >= 0:
             snow_depth[x] = new_level
             snow_bmp[x, new_level] = 1
-            
+
+def get_brightness_level(value):
+    # Scale a value from 0-320 (light range) to 0-1 (TFT Gizmo range).
+    # Allows remapping light value to pixel position.
+    # Return values from pre-determined ranges to 
+    #   avoid updating the brightness too often, which can cause the 
+    #   screen to go black at times.
+    if value < 10:
+        return 0.05
+    if value < 1:
+        return 0.1
+    if value < 200:
+        return 0.2
+    if value < 300:
+        return 0.5
+    return 1
+
 clear_the_snow()
 while True:
+    display.brightness = get_brightness_level(cpb.light)
     for i, flake in enumerate(flakes):
-        x, y, z = accelo.acceleration
+        x, y, z = cpb.acceleration
         # speed based on accelerometer
         if(y > 0):
             flake_pos[i] += y - flake[0] / 3
