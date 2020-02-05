@@ -23,3 +23,7 @@ This is a work in progress.
 [learn]: https://learn.adafruit.com/
 [travis]: https://travis-ci.com/adafruit/Adafruit_Learning_System_Guides/
 [travis-ci-arduino]: https://github.com/adafruit/travis-ci-arduino/
+
+## Forked Notes
+
+I have added a new file for TFT Snowglobe: Snowglobe Accelerometer which modifies the TFT snowglobe code to have the snow fall in the direction the CPB is tilted
